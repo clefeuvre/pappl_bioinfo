@@ -84,7 +84,8 @@ public class PHWriting {
 	}
 	
 	/*
-	 * create sorts and action for c 1 -> a+ 0 1 ; c1 -> a 1 0
+	 * create sorts and cooperativity for tranformation with controller
+	 * COOPERATIVITY([A,C] -> A+ 0 1,[[1;1]])
 	 */
 	public void createTransformation(Entity nodeA, Entity nodeB, Node controller){
 		//construct activated/inhibited sort
@@ -106,11 +107,12 @@ public class PHWriting {
 		}
 		//find or create controller Sort
 		Sort control=createSortIfNotPresent(controller.getName());
-		//Create and add action
-		Action action = new Action(control.getProcess(1),a.getProcess(1),a.getProcess(0));
-		Action action2 = new Action(control.getProcess(1),b.getProcess(0),b.getProcess(1));
-		actions.add(action);
-		actions.add(action2);
+		//Create and add cooperativity
+		ArrayList<Process> sources=new ArrayList<Process>();
+		sources.add(control.getProcess(1));
+		sources.add(a.getProcess(1));
+		Cooperativity coop = new Cooperativity(sources,b.getProcess(0),b.getProcess(1));
+		cooperativities.add(coop);
 	}
 	
 	/*
