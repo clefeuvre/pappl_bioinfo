@@ -18,7 +18,7 @@ public class MainTest {
 		String dbURL="jdbc:mysql://localhost:3306/hipathdb_reformatted_20100309";
 		String database_login = "root";
 		String database_password = "papplsql";
-		String pathway_id = "pid_p_100068_plk3pathway";
+		String pathway_id = "pid_p_100106_mitochondriapathway";
 		boolean searching_by_patwhay=true;
 		
 		long time = System.currentTimeMillis();
@@ -174,7 +174,7 @@ public class MainTest {
 					}
 					if(n.getType().equals("complex"))
 					{
-						ArrayList<Entity> sub_entities = ((ComplexNode)n).getSub_entities();
+						ArrayList<Entity> sub_entities = ((ComplexNode)n).createSubEntities(con);
 						for (Entity e : sub_entities) 
 						{
 							graph.addVertex(e);
@@ -338,9 +338,16 @@ public class MainTest {
 			writingTest.writeNodes(graph);
 			writingTest.writeEdges(graph);
 			writingTest.writeLinks(graph);
-			
-			/*PHWriting ph = new PHWriting();
-			ph.findTransformations(graph);*/
+
+			PHWriting ph = new PHWriting();
+			ph.findTransformations(graph);
+			ph.findComplexFormations(graph);
+			if(searching_by_patwhay){
+				ph.writePHFile(pathway_id+".ph");
+			}
+			else{
+				ph.writePHFile("base_"+databaseId+".ph");
+			}
 
 		} 
 

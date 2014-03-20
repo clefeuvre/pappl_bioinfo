@@ -58,7 +58,6 @@ public class ComplexNode extends Entity {
 				if(pathwaydbId==2 || pathwaydbId==3){
 					String requete = "SELECT * FROM reformatted_sub_entity WHERE entityId='"+entityId+"';";
 					rs = stmt.executeQuery(requete);
-					System.out.println(requete);
 				}
 			
 				while(rs.next()){
@@ -74,14 +73,12 @@ public class ComplexNode extends Entity {
 					}
 					Statement stmt2 = con.createStatement();
 					ResultSet r = stmt2.executeQuery("SELECT * FROM reformatted_entity_information WHERE entityId='"+id+"';");
-					System.out.println("subcomponentId : "+n.entityId);
 					if(r.next()){
 					n.setType(r.getString("entityType"));
 					n.setName(r.getString("entityName"));
 					n.setPathways(this.getPathways());
 					}
 					sub_entities.add(n);
-					System.out.println("sub_entity(name) "+n.getName()+" added.");
 					stmt2.close();
 				}
 			}
@@ -99,7 +96,6 @@ public class ComplexNode extends Entity {
 					n.setFeature(rs.getString("feature"));
 					n.setPathways(this.getPathways());
 					sub_entities.add(n);
-					System.out.println("DB4 sub_entity "+n.getEntityId()+" added.");
 				}
 			}
 			stmt.close();

@@ -8,6 +8,7 @@ public class Edge
 	protected Node nodeA;
 	protected Node nodeB;
 	protected String cytoscapeName;
+	protected boolean translated; //used to translate to PH
 	
 	
 	public Edge(int dbId, String patId, String intId, String interType, String control, Node na, Node nb)
@@ -112,6 +113,21 @@ public class Edge
 	 */
 	public void setControlType(String controlType) {
 		this.controlType = controlType;
+	}
+
+
+	/**
+	 * @return the translated
+	 */
+	public boolean isTranslated() {
+		return translated;
+	}
+
+	/**
+	 * @param translated the translated to set
+	 */
+	public void setTranslated(boolean translated) {
+		this.translated = translated;
 	}
 
 	public String attributeForCytoscape(int i)
