@@ -66,6 +66,7 @@ public class PHWriting {
 				Sort a=null;
 				Sort b=null;
 				if(e.getNodeA().getName().equals(e.getNodeB().getName())){
+					if(((Entity) e.getNodeA()).getLocation()!=null && ((Entity)e.getNodeB()).getLocation()!=null){
 					if(!((Entity) e.getNodeA()).getLocation().equals(((Entity) e.getNodeB()).getLocation())){
 						a=createSortIfNotPresent(e.getNodeA().getName()+((Entity) e.getNodeA()).getLocation());
 						b=createSortIfNotPresent(e.getNodeA().getName()+((Entity) e.getNodeB()).getLocation());
@@ -73,6 +74,11 @@ public class PHWriting {
 					else{
 						a=createSortIfNotPresent(e.getNodeA().getName()+((Entity) e.getNodeA()).getFeature());
 						b=createSortIfNotPresent(e.getNodeA().getName()+((Entity) e.getNodeB()).getFeature());
+					}
+					}
+					else{
+						a=createSortIfNotPresent(e.getNodeA().getName());
+						b=createSortIfNotPresent(e.getNodeB().getName());
 					}
 				}
 				else{
