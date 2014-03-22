@@ -13,10 +13,11 @@ public class Entity extends Node
 	
 	public Entity(){}
 	
-	public Entity(String entId, int patId, ComplexNode n){
+	public Entity(String entId, String nId, int patId, ComplexNode n){
 		entityId=entId;
 		pathwaydbId=patId;
 		complex=n;
+		nodeId=nId;
 	}
 	
 	public Entity(String pId, String entId, String nId, int patId){

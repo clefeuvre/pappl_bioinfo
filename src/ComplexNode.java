@@ -62,7 +62,7 @@ public class ComplexNode extends Entity {
 			
 				while(rs.next()){
 					//for each subentity, create an Entity, and get the information about it
-					Entity n = new Entity(rs.getString("subcomponentId"),rs.getInt("pathwaydbId"),this);
+					Entity n = new Entity(rs.getString("subcomponentId"),this.nodeId, rs.getInt("pathwaydbId"),this);
 					String id=rs.getString("subcomponentId");
 					if(pathwaydbId==2 || pathwaydbId==3){ //for DB2 and 3, the subcomponentId has to be modified to be used for a query in the entity_information table				
 						id=id.replace("x", "m");
@@ -82,14 +82,14 @@ public class ComplexNode extends Entity {
 					stmt2.close();
 				}
 			}
-			else{ //DB4
+			else{ //DB4 -- since the sub_entities have no nodeId in the database, they use the one of the complex
 				rs=stmt.executeQuery("SELECT DISTINCT(reformatted_entity_particpant.entityId) as subentity_id, reformatted_entity_information.*, reformatted_entity_particpant.location, reformatted_entity_particpant.feature " 
 						+"FROM reformatted_sub_entity, reformatted_entity_particpant, reformatted_entity_information "
 						+ "WHERE reformatted_sub_entity.entityId='"+entityId
 						+"' AND reformatted_entity_particpant.participantId=reformatted_sub_entity.subcomponentId "
 						+"AND reformatted_entity_information.entityId=reformatted_entity_particpant.entityId");
 				while(rs.next()){
-					Entity n = new Entity(rs.getString("subentity_id"), pathwaydbId, this);
+					Entity n = new Entity(rs.getString("subentity_id"),this.nodeId ,pathwaydbId, this);
 					n.setType(rs.getString("entityType"));
 					n.setName(rs.getString("entityName"));
 					n.setLocation(rs.getString("location"));

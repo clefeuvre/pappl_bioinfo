@@ -17,6 +17,7 @@ public class SuperNode extends Node{
 		pathwaydbId=patid;
 		type="SuperNode";
 		name = "SuperNode_"+instanceCount;
+		instanceCount++;
 	}
 	
 	public void addSubNode(Node n){

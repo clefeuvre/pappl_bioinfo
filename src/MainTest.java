@@ -14,12 +14,12 @@ public class MainTest {
 	 */
 	public static void main(String[] args) {
 		// PARAMETERS
-		int databaseId = 2;
+		int databaseId = 1;
 		String dbURL="jdbc:mysql://localhost:3306/hipathdb_reformatted_20100309";
 		String database_login = "root";
 		String database_password = "papplsql";
 		String pathway_id = "pid_p_100106_mitochondriapathway";
-		boolean searching_by_patwhay=true;
+		boolean searching_by_patwhay=false;
 		
 		long time = System.currentTimeMillis();
 		try
@@ -137,13 +137,11 @@ public class MainTest {
 			
 				
 				//We browse the graph to check if the node n is not already in the graph 
-				//(We cannot  use the containsVertex method of the graph because it does not behave as explained in the doc)
-
 				Set<Node> nodes = new HashSet<Node>();
 				nodes = graph.vertexSet();
 				boolean trouve = false;
 				Iterator<Node> it = nodes.iterator();
-				Node node=new Node();
+				Node node=null;
 
 				Entity alreadyInGraph = new Entity();
 				while(it.hasNext() && !trouve){
@@ -181,8 +179,7 @@ public class MainTest {
 						}
 					}
 				}
-				previous = n;
-
+				previous=n;
 			}
 
 			stmt.close(); 
@@ -258,9 +255,9 @@ public class MainTest {
 				String nodeAId = rs2.getString("nodeA");
 				String nodeBId = rs2.getString("nodeB");
 				String controllerId = rs2.getString("controller");
-				Node nodeA=new Node();
-				Node nodeB=new Node();
-				Node controller=new Node();
+				Node nodeA=null;
+				Node nodeB=null;
+				Node controller=null;
 				Iterator<Node> it = nodes.iterator();
 				boolean nodeA_supernode=false;
 				boolean nodeB_supernode=false;
@@ -291,19 +288,19 @@ public class MainTest {
 						}
 					}
 				}
-				if(nodeA.getNodeID()==null && nodeB.getNodeID()!=null && controller.getNodeID()!=null)
+				if(nodeA==null && nodeB!=null && controller!=null)
 				{ 
 					//if there is no nodeA, the edge comes from controller to nodeB
 					Edge e = new Edge(rs2.getInt("pathwayDbId"), rs2.getString("pathwayId"), rs2.getString("interactionId"),rs2.getString("interactionType"),rs2.getString("controlType"),controller,nodeB);
 					graph.addEdge(controller, nodeB, e);
 				}
-				else if(nodeB.getNodeID()==null && nodeA.getNodeID()!=null && controller.getNodeID()!=null)
+				else if(nodeB==null && nodeA!=null && controller!=null)
 				{ 
 					//if there is no nodeB but a nodeA and a controller, edge from controller to nodeA
 					Edge e = new Edge(rs2.getInt("pathwayDbId"), rs2.getString("pathwayId"), rs2.getString("interactionId"),rs2.getString("interactionType"),rs2.getString("controlType"),controller,nodeA);
 					graph.addEdge(controller, nodeA, e);
 				}
-				else if(nodeA.getNodeID()!=null && nodeB.getNodeID()!=null && controller.getNodeID()!=null){ //if there is a nodeA, a nodeB and a controller, since we can't do an edge terminating on another edge we have to create a node
+				else if(nodeA!=null && nodeB!=null && controller!=null){ //if there is a nodeA, a nodeB and a controller, since we can't do an edge terminating on another edge we have to create a node
 					PseudoNode pn = new PseudoNode(rs2.getString("interactionId"),databaseId, controller, nodeA, nodeB);
 					graph.addVertex(pn);
 					//edge from node A to PseudoNode
@@ -316,7 +313,7 @@ public class MainTest {
 					Edge e3 = new Edge(rs2.getInt("pathwayDbId"), rs2.getString("pathwayId"), rs2.getString("interactionId"),rs2.getString("interactionType"),rs2.getString("controlType"),pn,nodeB);
 					graph.addEdge(pn, nodeB, e3);
 				}
-				else if (nodeA.getNodeID()!=null && nodeB.getNodeID()!=null){//normal edge from nodeA to nodeB
+				else if (nodeA!=null && nodeB!=null){//normal edge from nodeA to nodeB
 					Edge e = new Edge(rs2.getInt("pathwayDbId"), rs2.getString("pathwayId"), rs2.getString("interactionId"),rs2.getString("interactionType"),rs2.getString("controlType"),nodeA,nodeB);
 					graph.addEdge(nodeA, nodeB, e);
 				}

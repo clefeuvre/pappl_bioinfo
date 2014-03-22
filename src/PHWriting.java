@@ -62,7 +62,7 @@ public class PHWriting {
 		}
 		//transformations without controller : simple arrows A->B
 		for(Edge e : allEdges){
-			if(e.getNodeA() instanceof Entity && e.getNodeB() instanceof Entity && !e.isTranslated()){
+			if(e.getNodeA() instanceof Entity && e.getNodeB() instanceof Entity && !e.isTranslated() && !e.getNodeA().equals(e.getNodeB())){
 				Sort a=null;
 				Sort b=null;
 				if(e.getNodeA().getName().equals(e.getNodeB().getName())){
@@ -74,6 +74,10 @@ public class PHWriting {
 						a=createSortIfNotPresent(e.getNodeA().getName()+((Entity) e.getNodeA()).getFeature());
 						b=createSortIfNotPresent(e.getNodeA().getName()+((Entity) e.getNodeB()).getFeature());
 					}
+				}
+				else{
+					a=createSortIfNotPresent(e.getNodeA().getName());
+					b=createSortIfNotPresent(e.getNodeB().getName());
 				}
 
 				Action ac = new Action(a.getProcess(1),b.getProcess(0),b.getProcess(1));
@@ -92,13 +96,19 @@ public class PHWriting {
 		Sort a = null;
 		Sort b = null;
 		if(nodeA.getName().equals(nodeB.getName())){
-			if(!nodeA.getFeature().equals(nodeB.getFeature())){
-				a = createSortIfNotPresent(nodeA.getName()+"_"+nodeA.getFeature());
-				b = createSortIfNotPresent(nodeB.getName()+"_"+nodeB.getFeature());
+			if(nodeA.getFeature()!=null && nodeB.getFeature()!=null && nodeA.getLocation()!=null && nodeB.getLocation()!=null){
+				if(!nodeA.getFeature().equals(nodeB.getFeature())){
+					a = createSortIfNotPresent(nodeA.getName()+"_"+nodeA.getFeature());
+					b = createSortIfNotPresent(nodeB.getName()+"_"+nodeB.getFeature());
+				}
+				else{
+					a = createSortIfNotPresent(nodeA.getName()+"_"+nodeA.getLocation());
+					b = createSortIfNotPresent(nodeB.getName()+"_"+nodeB.getLocation());
+				}
 			}
 			else{
-				a = createSortIfNotPresent(nodeA.getName()+"_"+nodeA.getLocation());
-				b = createSortIfNotPresent(nodeB.getName()+"_"+nodeB.getLocation());
+				a = createSortIfNotPresent(nodeA.getName());
+				b = createSortIfNotPresent(nodeB.getName());
 			}
 		}
 		else{
