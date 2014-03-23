@@ -1,21 +1,13 @@
-/**
- * This class is used to create Edges in the graph
- * (they correspond to the elements of "relationpair" in the database)
- * @author Claire
- *
- */
-
-public class Edge 
+public class Edge implements java.io.Serializable
 {
-	protected int pathwaydbId; //n° of the database (1, 2, 3 or 4)
-	protected String pathwayId; //id of the pathway the relation belongs to
-	protected String interactionId; //interactionId of the relation
+	protected int pathwaydbId;
+	protected String pathwayId;
+	protected String interactionId;
 	protected String interactionType;
 	protected String controlType;
 	protected Node nodeA;
 	protected Node nodeB;
 	protected String cytoscapeName;
-	protected boolean translated; //used to translate to PH
 	
 	
 	public Edge(int dbId, String patId, String intId, String interType, String control, Node na, Node nb)
@@ -120,21 +112,6 @@ public class Edge
 	 */
 	public void setControlType(String controlType) {
 		this.controlType = controlType;
-	}
-
-
-	/**
-	 * @return the translated
-	 */
-	public boolean isTranslated() {
-		return translated;
-	}
-
-	/**
-	 * @param translated the translated to set
-	 */
-	public void setTranslated(boolean translated) {
-		this.translated = translated;
 	}
 
 	public String attributeForCytoscape(int i)

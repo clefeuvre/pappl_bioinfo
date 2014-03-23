@@ -21,6 +21,8 @@ public class CytoscapeWriting {
 	{
 		//Creating all .NA files, from all the attributes of the nodes
 
+		int countCas1 = 0;
+		int countCas2 = 0;
 		try
 		{
 
@@ -117,17 +119,19 @@ public class CytoscapeWriting {
 			for (Node node : allNodes)
 			{
 				String tempName = node.getName();
-				
+
 				if (!cytoscapeNames.containsKey(tempName))
 				{
 					node.cytoscapeName = tempName;
 					cytoscapeNames.put(tempName, 1);
+					countCas1++;
 				}
 
 				if (cytoscapeNames.containsKey(tempName))
 				{
 					node.cytoscapeName = tempName + Integer.toString(cytoscapeNames.get(tempName) + 1);
 					cytoscapeNames.put(tempName, cytoscapeNames.get(tempName) + 1);
+					countCas2++;
 				}
 				int i = 0;
 				for (BufferedWriter writer : BufferedWriters)
@@ -136,6 +140,7 @@ public class CytoscapeWriting {
 					{
 						writer.write("\n"+ node.cytoscapeName + " = "+ node.attributeForCytoscape(i));
 						writer.flush();
+						System.out.println("writing node : " + node.getCytoscapeName());
 					}
 					i++;
 				}
@@ -148,6 +153,7 @@ public class CytoscapeWriting {
 		{
 			e.printStackTrace();
 		}
+
 	}
 
 	public void writeEdges(DirectedPseudograph<Node,Edge> graph)
@@ -285,5 +291,6 @@ public class CytoscapeWriting {
 			e.printStackTrace();
 		}
 	}
+
 
 }
