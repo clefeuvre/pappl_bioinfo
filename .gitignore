@@ -4,7 +4,6 @@
 *.na
 
 # Package Files #
-*.jar
 *.war
 *.ear
 /bin

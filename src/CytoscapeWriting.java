@@ -140,7 +140,6 @@ public class CytoscapeWriting {
 					{
 						writer.write("\n"+ node.cytoscapeName + " = "+ node.attributeForCytoscape(i));
 						writer.flush();
-						System.out.println("writing node : " + node.getCytoscapeName());
 					}
 					i++;
 				}

@@ -8,6 +8,7 @@ public class Edge implements java.io.Serializable
 	protected Node nodeA;
 	protected Node nodeB;
 	protected String cytoscapeName;
+	protected boolean translated;
 	
 	
 	public Edge(int dbId, String patId, String intId, String interType, String control, Node na, Node nb)
@@ -21,6 +22,20 @@ public class Edge implements java.io.Serializable
 		controlType = control;
 	}
 	
+	/**
+	 * @return the translated
+	 */
+	public boolean isTranslated() {
+		return translated;
+	}
+
+	/**
+	 * @param translated the translated to set
+	 */
+	public void setTranslated(boolean translated) {
+		this.translated = translated;
+	}
+
 	/**
 	 * @return the interactionId
 	 */

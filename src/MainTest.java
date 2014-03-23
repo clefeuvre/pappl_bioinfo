@@ -1,3 +1,7 @@
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,16 +17,19 @@ public class MainTest {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		
 		// PARAMETERS
 		int databaseId=1;
 		String dbURL=null;
 		String database_login=null;
 		String database_password=null;
 		String pathway_id=null;
-		boolean searching_by_patwhay=false;
-		
-		if(args[0].equals("--help") || args[0].equals("-h")){
+ 		boolean searching_by_patwhay=false;
+		 		
+ 		if(args.length<4){
+			System.out.println("Not enough parameters (minimum 4, --help to get help)");
+			return;
+		}
+ 		else if(args[0].equals("--help") || args[0].equals("-h")){
 			System.out.println("PAPPL BIOINFORMATIQUE");
 			System.out.println("This program needs 4 or 5 parameters when called :");
 			System.out.println("1. address of the HipathDB database (on the form \"jdbc:mysql://localhost:3306/hipathdb_reformatted_20100309\"");
@@ -31,10 +38,6 @@ public class MainTest {
 			System.out.println("4. number of the database used for this query (reminder : 1=KEGG, 2=BioCarta, 3=Nci-Nature, 4=Reactome)");
 			System.out.println("5. -optional- id of the wanted pathway");
 			
-			return;
-		}
-		else if(args.length<4){
-			System.out.println("Not enough parameters (minimum 4, --help to get help)");
 			return;
 		}
 		else if(args.length>5){
@@ -46,7 +49,6 @@ public class MainTest {
 			database_login=args[1];
 			database_password=args[2];
 			databaseId=Integer.parseInt(args[3]);
-			
 			if(args.length==4){
 				searching_by_patwhay=false;
 			}
@@ -55,10 +57,6 @@ public class MainTest {
 				pathway_id=args[4];
 			}
 		}
-		
-		
-		
-		
 		long time = System.currentTimeMillis();
 		try
 		{
@@ -71,10 +69,11 @@ public class MainTest {
 			System.err.println(e.getMessage());
 		}
 
-		
+
+
 		Connection con;
-		try 
-		{
+ 		try 
+ 		{
 			con=DriverManager.getConnection(dbURL,database_login,database_password);
 		}
 		catch(SQLException e){
@@ -83,12 +82,12 @@ public class MainTest {
 		}
 		try{
 			Statement stmt = con.createStatement();
-			
+
 			///////////////////////////////////////////////////////////////////////////////////////
 			//         Creating a HashMap linking supernodeIds with pathwayIds
 			///////////////////////////////////////////////////////////////////////////////////////
 			HashMap<String, HashSet<String>> nodeIds_pathways = new HashMap<String, HashSet<String>>();
-			
+
 			ResultSet path_res = stmt.executeQuery("SELECT DISTINCT reformatted_abstract_node.superNodeId, reformatted_pathway_abstractnode.pathwayId"
 			+" FROM reformatted_abstract_node, reformatted_pathway_abstractnode"
 			+" WHERE reformatted_abstract_node.superNodeId=reformatted_pathway_abstractnode.superNodeId"
@@ -112,7 +111,7 @@ public class MainTest {
 			//          get all the "normal" nodes
 			///////////////////////////////////////////////////////////////////////////////////////
 
-			
+
 			ResultSet rs;
 			if(searching_by_patwhay){
 				rs = stmt.executeQuery("SELECT DISTINCT reformatted_entity_particpant.*, reformatted_abstract_node.superNodeId, reformatted_entity_information.entityType, reformatted_entity_information.entityName "
@@ -143,7 +142,7 @@ public class MainTest {
 
 			while (rs.next()) 
 			{
-				
+
 				Entity n;
 				if(rs.getString("entityType").equals("complex")){
 					n = new ComplexNode(rs.getString("participantId"), rs.getString("entityId"), rs.getString("supernodeId"), rs.getInt("pathwayDbId"),rs.getString("entityName"), rs.getString("entityType"));		
@@ -153,7 +152,7 @@ public class MainTest {
 				}
 				n.setFeature(rs.getString("feature"));
 				n.setLocation(rs.getString("location"));
-				
+
 				//special for supernodes : we have to manage entities linked to 1 or several superNodes 
 				if((rs.getInt("pathwaydbId")!=1 && rs.getString("superNodeId").startsWith("C")) || (rs.getInt("pathwaydbId")==1 && rs.getString("superNodeId").startsWith("E")) || (rs.getInt("pathwaydbId")==1 && rs.getString("superNodeId").startsWith("M"))){
 					//if it is a different superNodeId, reinitialize the counter counting the number of entity with the same sueprNodeId (we need to create a superNode only if there are several entities with the same superNodeId)
@@ -178,14 +177,16 @@ public class MainTest {
 					//in all cases increment counter
 					compteur++;
 				}
-			
-				
+
+
 				//We browse the graph to check if the node n is not already in the graph 
+				//(We cannot  use the containsVertex method of the graph because it does not behave as explained in the doc)
+
 				Set<Node> nodes = new HashSet<Node>();
 				nodes = graph.vertexSet();
 				boolean trouve = false;
 				Iterator<Node> it = nodes.iterator();
-				Node node=null;
+				Node node=new Node();
 
 				Entity alreadyInGraph = new Entity();
 				while(it.hasNext() && !trouve){
@@ -216,14 +217,15 @@ public class MainTest {
 					}
 					if(n.getType().equals("complex"))
 					{
-						ArrayList<Entity> sub_entities = ((ComplexNode)n).createSubEntities(con);
+						ArrayList<Entity> sub_entities = ((ComplexNode)n).getSub_entities();
 						for (Entity e : sub_entities) 
 						{
 							graph.addVertex(e);
 						}
 					}
 				}
-				previous=n;
+				previous = n;
+
 			}
 
 			stmt.close(); 
@@ -254,7 +256,7 @@ public class MainTest {
 				if(rs_spe.getInt("reformatted_abstract_node.pathwayDbId")==1 && rs_spe.getString("superNodeId").startsWith("S")){
 					//special nodes in DB1 with nodeId beginning by S are complex which have information associated to them in the entity_information table
 					//special nodes beginning by M or E cannot be found in the database, so we do not create them
-					
+
 					Statement stmt_compl=con.createStatement();
 					String requete = "SELECT * FROM reformatted_entity_information WHERE entityId='"+rs_spe.getString("participantId")+"' AND pathwayDbId='1'";
 					ResultSet rs_compl=stmt_compl.executeQuery(requete);
@@ -284,7 +286,7 @@ public class MainTest {
 
 			Statement stmt2 = con.createStatement();
 			ResultSet rs2 ;
-			
+
 			if(searching_by_patwhay){
 				rs2 = stmt2.executeQuery("SELECT * FROM reformatted_pathway_relationPair WHERE pathwayDbId='"+databaseId+"' AND pathwayId ='"+pathway_id+"';");
 			}
@@ -374,6 +376,35 @@ public class MainTest {
 			DriverManager.deregisterDriver(theDriver);
 			time = System.currentTimeMillis() - time;
 			System.out.println("time : "+time+ "ms");
+			
+			/* NOT USED FOR THE MOMENT 
+			 * possibility to serialize the graph
+			 * or to use a serialized graph (deserializing it)
+
+			//to serialize graph 
+			SerializableGraph ser_graph = new SerializableGraph(graph);
+			ser_graph.serialize("graphe_serialise");
+			
+			//deserialize graph
+			FileInputStream fileIn;
+			try {
+				fileIn = new FileInputStream("chemin_acces/graphe_serialise.ser");
+				ObjectInputStream in = new ObjectInputStream(fileIn);
+				SerializableGraph sg = (SerializableGraph) in.readObject();
+				in.close();
+				fileIn.close();
+			} catch (FileNotFoundException e) {
+				System.out.println("file not found");
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			*/
+
 
 			CytoscapeWriting writingTest = new CytoscapeWriting();
 			writingTest.writeNodes(graph);
@@ -382,16 +413,18 @@ public class MainTest {
 			System.out.println("Cytoscape files written");
 
 			PHWriting ph = new PHWriting();
-			ph.findTransformations(graph);
-			ph.findComplexFormations(graph);
+ 			ph.findTransformations(graph);
+ 			ph.findComplexFormations(graph);
 			String filename=null;
-			if(searching_by_patwhay){
+ 			if(searching_by_patwhay){
+				ph.writePHFile(pathway_id+".ph");
 				filename = pathway_id+".ph";
 				
-			}
-			else{
+ 			}
+ 			else{
+				ph.writePHFile("base_"+databaseId+".ph");
 				filename="base_"+databaseId+".ph";
-			}
+ 			}
 			ph.writePHFile(filename);
 			System.out.println("PH file written ("+filename+")");
 
@@ -399,7 +432,6 @@ public class MainTest {
 
 		catch (SQLException e) 
 		{
-			System.out.println("SQL Error");
 			e.printStackTrace();
 		}
 
