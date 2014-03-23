@@ -67,7 +67,6 @@ public class PHWriting {
 					Node controller = ((PseudoNode) node).getController();
 					if(nodeA instanceof Entity && nodeB instanceof Entity && !done){
 						createTransformation((Entity)nodeA, (Entity)nodeB, controller);
-						System.out.println("transformation found");
 						done = true;
 						edge.setTranslated(true);
 					}

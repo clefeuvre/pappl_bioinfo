@@ -13,13 +13,51 @@ public class MainTest {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		
 		// PARAMETERS
-		int databaseId = 1;
-		String dbURL="jdbc:mysql://localhost:3306/hipathdb_reformatted_20100309";
-		String database_login = "root";
-		String database_password = "papplsql";
-		String pathway_id = "pid_p_100106_mitochondriapathway";
+		int databaseId=1;
+		String dbURL=null;
+		String database_login=null;
+		String database_password=null;
+		String pathway_id=null;
 		boolean searching_by_patwhay=false;
+		
+		if(args[0].equals("--help") || args[0].equals("-h")){
+			System.out.println("PAPPL BIOINFORMATIQUE");
+			System.out.println("This program needs 4 or 5 parameters when called :");
+			System.out.println("1. address of the HipathDB database (on the form \"jdbc:mysql://localhost:3306/hipathdb_reformatted_20100309\"");
+			System.out.println("2. login used to connect to the database");
+			System.out.println("3. password used to connect to the database");
+			System.out.println("4. number of the database used for this query (reminder : 1=KEGG, 2=BioCarta, 3=Nci-Nature, 4=Reactome)");
+			System.out.println("5. -optional- id of the wanted pathway");
+			
+			return;
+		}
+		else if(args.length<4){
+			System.out.println("Not enough parameters (minimum 4, --help to get help)");
+			return;
+		}
+		else if(args.length>5){
+			System.out.println("Too many parameters (maximum 5, --help to get help)");
+			return;
+		}
+		else{
+			dbURL=args[0];
+			database_login=args[1];
+			database_password=args[2];
+			databaseId=Integer.parseInt(args[3]);
+			
+			if(args.length==4){
+				searching_by_patwhay=false;
+			}
+			else if(args.length==5){
+				searching_by_patwhay=true;
+				pathway_id=args[4];
+			}
+		}
+		
+		
+		
 		
 		long time = System.currentTimeMillis();
 		try
@@ -34,10 +72,16 @@ public class MainTest {
 		}
 
 		
-
+		Connection con;
 		try 
 		{
-			Connection con=DriverManager.getConnection(dbURL,database_login,database_password);
+			con=DriverManager.getConnection(dbURL,database_login,database_password);
+		}
+		catch(SQLException e){
+			System.out.println("Could not connect to the database. Check address, login and password.");
+			return;
+		}
+		try{
 			Statement stmt = con.createStatement();
 			
 			///////////////////////////////////////////////////////////////////////////////////////
@@ -329,27 +373,33 @@ public class MainTest {
 			Driver theDriver=DriverManager.getDriver(dbURL);
 			DriverManager.deregisterDriver(theDriver);
 			time = System.currentTimeMillis() - time;
-			System.out.println("temps écoulé : "+time+ "ms");
+			System.out.println("time : "+time+ "ms");
 
 			CytoscapeWriting writingTest = new CytoscapeWriting();
 			writingTest.writeNodes(graph);
 			writingTest.writeEdges(graph);
 			writingTest.writeLinks(graph);
+			System.out.println("Cytoscape files written");
 
 			PHWriting ph = new PHWriting();
 			ph.findTransformations(graph);
 			ph.findComplexFormations(graph);
+			String filename=null;
 			if(searching_by_patwhay){
-				ph.writePHFile(pathway_id+".ph");
+				filename = pathway_id+".ph";
+				
 			}
 			else{
-				ph.writePHFile("base_"+databaseId+".ph");
+				filename="base_"+databaseId+".ph";
 			}
+			ph.writePHFile(filename);
+			System.out.println("PH file written ("+filename+")");
 
 		} 
 
 		catch (SQLException e) 
 		{
+			System.out.println("SQL Error");
 			e.printStackTrace();
 		}
 
