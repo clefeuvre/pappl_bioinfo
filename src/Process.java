@@ -1,4 +1,11 @@
 
+/**
+ * This class is used by the Sort and PHWriting classes
+ * to create Process contained in Sorts for the translation of the
+ * graph to PH file
+ * @author Claire
+ *
+ */
 public class Process {
 	protected String name;
 	protected Sort sort;
@@ -9,7 +16,7 @@ public class Process {
 	}
 
 	/**
-	 * @return the name
+	 * @return the name of the process
 	 */
 	public String getName() {
 		return name;

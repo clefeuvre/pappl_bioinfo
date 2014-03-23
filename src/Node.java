@@ -1,14 +1,18 @@
 import java.util.HashSet;
 
-
+/**
+ * This class is the mother class for all nodes in the graph.
+ * @author Claire
+ *
+ */
 
 public class Node {
 	
-	protected int pathwaydbId;
-	protected HashSet<String> pathways = new HashSet<String>();
+	protected int pathwaydbId; //n° of the database 
+	protected HashSet<String> pathways = new HashSet<String>(); //pathways the node belongs to
 	
-	protected String nodeId;
-	protected String name;
+	protected String nodeId; //id of the node (superNodeId in the DB)
+	protected String name; 
 	protected String type;
 	protected String cytoscapeName;
 
@@ -20,7 +24,8 @@ public class Node {
 	
  
 
-	public Node(){}
+	public Node(){
+	}
 	/**
 	 * @return the nodeID
 	 */

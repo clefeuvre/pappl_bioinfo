@@ -1,4 +1,11 @@
 
+/**
+ * This class is used by the PHWriting class to create
+ * actions between processes
+ * @author Claire
+ *
+ */
+
 public class Action {
 	protected Process source;
 	protected Process target;
@@ -11,7 +18,7 @@ public class Action {
 	}
 
 	/**
-	 * @return the source
+	 * @return the source process
 	 */
 	public Process getSource() {
 		return source;
@@ -25,7 +32,7 @@ public class Action {
 	}
 
 	/**
-	 * @return the target
+	 * @return the target process
 	 */
 	public Process getTarget() {
 		return target;
@@ -39,7 +46,7 @@ public class Action {
 	}
 
 	/**
-	 * @return the result
+	 * @return the result process
 	 */
 	public Process getResult() {
 		return result;

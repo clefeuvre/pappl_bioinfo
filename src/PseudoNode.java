@@ -10,10 +10,10 @@
 
 public class PseudoNode extends Node {
 	
-	private static int instanceCount = 0;
-	protected Node controller;
-	protected Node nodeA;
-	protected Node nodeB;
+	private static int instanceCount = 0; //number of instances created, used to give a different name to each PseudoNode
+	protected Node controller; //controller of the reaction
+	protected Node nodeA; //nodeA of the reaction
+	protected Node nodeB; //nodeB of the reaction
 	
 	
 	public PseudoNode(String id, int patid,Node contr, Node nA, Node nB){

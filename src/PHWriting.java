@@ -8,6 +8,12 @@ import java.util.Set;
 
 import org.jgrapht.graph.DirectedPseudograph;
 
+/**
+ * This class is used to translate a graph to PH formalism
+ * and write the PH file.
+ * @author Claire
+ *
+ */
 
 public class PHWriting {
 	
@@ -21,6 +27,12 @@ public class PHWriting {
 		cooperativities = new ArrayList<Cooperativity>();
 	}
 	
+	/**
+	 * From a name, creates the sort if it does not exist in the sorts attribute (and add it to "sorts")
+	 * or return the existing sort with this name
+	 * @param name : the name of the sort to get
+	 * @return the sort with the researched name
+	 */
 	public Sort createSortIfNotPresent(String name){
 		Sort s=null;
 		if(!sorts.containsKey(name)){
@@ -33,6 +45,11 @@ public class PHWriting {
 		return s;
 	}
 	
+	/**
+	 * Find and translate all simple transformations in the graph
+	 * (interaction with no supernode involved)
+	 * @param graph : the graph to analyse
+	 */
 	public void findTransformations(DirectedPseudograph<Node, Edge> graph){		
 		Set<Node> allNodes = new HashSet<Node>();
 		allNodes = graph.vertexSet();
@@ -76,7 +93,7 @@ public class PHWriting {
 						b=createSortIfNotPresent(e.getNodeA().getName()+((Entity) e.getNodeB()).getFeature());
 					}
 					}
-					else{
+					else{ //some interactions in base 1 have nodeA and nodeB with exactly the same name and no feature nor location
 						a=createSortIfNotPresent(e.getNodeA().getName());
 						b=createSortIfNotPresent(e.getNodeB().getName());
 					}
@@ -93,9 +110,12 @@ public class PHWriting {
 		}
 	}
 	
-	/*
+	/**
 	 * create sorts and cooperativity for tranformation with controller
-	 * COOPERATIVITY([A,C] -> A+ 0 1,[[1;1]])
+	 * in the form : COOPERATIVITY([A,C] -> A+ 0 1,[[1;1]])
+	 * @param nodeA
+	 * @param nodeB
+	 * @param controller
 	 */
 	public void createTransformation(Entity nodeA, Entity nodeB, Node controller){
 		//construct activated/inhibited sort
@@ -112,7 +132,7 @@ public class PHWriting {
 					b = createSortIfNotPresent(nodeB.getName()+"_"+nodeB.getLocation());
 				}
 			}
-			else{
+			else{//some interactions in base 1 have nodeA and nodeB with exactly the same name and no feature nor location
 				a = createSortIfNotPresent(nodeA.getName());
 				b = createSortIfNotPresent(nodeB.getName());
 			}
@@ -131,8 +151,9 @@ public class PHWriting {
 		cooperativities.add(coop);
 	}
 	
-	/*
-	 * Finds the complex formations in the graph and creates the appropriates Sorts, Process and Cooperativites
+	/**
+	 * Finds the complex formations (with supernodes) in the graph and creates the appropriates Sorts, Process and Cooperativites
+	 * @param graph
 	 */
 	public void findComplexFormations(DirectedPseudograph<Node, Edge> graph){
 		Set<Edge> allEdges = new HashSet<Edge>();
@@ -200,9 +221,11 @@ public class PHWriting {
 		}
 	}
 	
-	/*
+	/**
 	 * Creates the sorts and processes for a complex formation of the form :
 	 * Cooperativity([A,B,C...] -> (A+B+C+...-complex) 0 1, [1,1,1,...]
+	 * @param sources : arraylist of nodes initiating the reaction
+	 * @param c : complexNode result of the reaction
 	 */
 	public void createComplexFormation(ArrayList<Node> sources, ComplexNode c){
 		ArrayList<Process> sources_processes=new ArrayList<Process>();
@@ -215,18 +238,23 @@ public class PHWriting {
 		cooperativities.add(coop);
 	}
 	
-	/*
+	/**
 	 * Creates the sorts and processes for a complex formation of the form :
 	 * Cooperativity([A,B,C...+D] -> (A+B+C+...-complex) 0 1, [1,1,1,...]
+	 * @param sources : arraylist of nodes at the begining of the reaction
+	 * @param c : complexNode result of the reaction
+	 * @param controller : controller of the reaction
 	 */
 	public void createComplexFormationWithController(ArrayList<Node> sources, ComplexNode c, Node controller){
 		sources.add(controller);
 		createComplexFormation(sources, c);
 	}
 	
-	/*
+	/**
 	 * creates sorts, process and actions for a decomplexation (complex -> supernode containing sub-elements)
-	 * Complex 1 -> element 0 1; Complex 1 -> element2 01 ....
+	 * Complex 1 -> element 0 1; Complex 1 -> element2 0 1 ....
+	 * @param comp : ComplexNode at the beginning of reaction
+	 * @param result : arraylist of Nodes : result of the reaction
 	 */
 	public void createDecomplexation(ComplexNode comp, ArrayList<Node> result){
 		//creating sort and processes for the complex
@@ -240,9 +268,13 @@ public class PHWriting {
 		}
 	}
 	
-	/*
-	 * Creates sorts, process and cooperativities for decomplexation with a controller (complex -> several elements if controller is present)
+	/**
+	 * Creates sorts, process and cooperativities for decomplexation with a controller 
+	 * (complex -> several elements if controller is present)
 	 * COOPERATVITY([complex,controller]->element[i] 0 1, [1,1])
+	 * @param comp : ComplexNode at the beginning of the reaction
+	 * @param result : arraylist of Node, results of the reaction
+	 * @param controller : controller of the reaction
 	 */
 	public void createDecomplexationWithController(ComplexNode comp, ArrayList<Node> result, Node controller){
 		//creating sort and processes for the complex
@@ -280,25 +312,39 @@ public class PHWriting {
 		}		
 	}
 	
+	/**
+	 * Creates Sorts, Process and cooperativities for reactions with 2 supernodes and a controller
+	 * @param sources list of source nodes (sub-elements of the Supernode at the beginning of reaction)
+	 * @param results list of results nodes (sub-elements of the Supernode at the end of reaction)
+	 * @param controller : controller of the reaction
+	 */
 	public void createOtherComplexationWithController(ArrayList<Node> sources, ArrayList<Node> results, Node controller){
 		sources.add(controller);
 		createOtherComplexation(sources, results);
 	}
 	
+	/**
+	 * Write the PH file with all Sorts, Actions and Cooperativities in the sorts, actions and cooperativities attributes
+	 * in the file given as parameter
+	 * @param fileName : name of the file to write
+	 */
 	public void writePHFile(String fileName){
 		try{
 	      BufferedWriter fichier = new BufferedWriter(new FileWriter(fileName));
+	      //Write sorts
 	      for(String sortName : sorts.keySet()){
 	    	  int taille = sorts.get(sortName).getSize()-1;
 	    	  fichier.write("process "+sortName+" "+taille);
 	    	  fichier.newLine();
 	      }
 	      fichier.newLine();
+	      //Write actions
 	      for(Action a : actions){
 	    	  fichier.write(a.getSource().getSort().getName()+" "+a.getSource().getSort().indexOf(a.getSource())+" -> "+a.getTarget().getSort().getName()+" "+a.getTarget().getSort().indexOf(a.getTarget())+" "+a.getResult().getSort().indexOf(a.getResult()));
 	    	  fichier.newLine();
 	      }
 	      fichier.newLine();
+	      //Write Cooperativities
 	      for(Cooperativity c : cooperativities){
 	    	 String coop = "[";
 	    	 String states = "[";

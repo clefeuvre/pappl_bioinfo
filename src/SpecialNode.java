@@ -1,4 +1,14 @@
 
+/**
+ * This class represent a special kind of Entity : nodes that do not represent
+ * a molecule or a gene but en event. In the database, they are in the abstract_node
+ * table but not the entity_particpant one.
+ * They do not have feature or location, but they can appear in relations.
+ * @extends Entity
+ * @author Claire
+ *
+ */
+
 public class SpecialNode extends Entity {
 	
 	public SpecialNode(String pId, String nId, int patId) {

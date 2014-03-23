@@ -5,10 +5,15 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-
+/**
+ * This class represents complex nodes : nodes that are the gathering of several other elements
+ * The sub-elements of a complex are Entities (and not complex nor specialnodes)
+ * @author Claire
+ *
+ */
 public class ComplexNode extends Entity {
 	
-	protected ArrayList<Entity> sub_entities=new ArrayList<Entity>();
+	protected ArrayList<Entity> sub_entities=new ArrayList<Entity>(); //list of the sub-elements of the complex
 
 	public ComplexNode(String pId, String entId, String nId, int patId) {
 		super(pId, entId, nId, patId);
@@ -36,7 +41,7 @@ public class ComplexNode extends Entity {
 	}
 	
 	/*
-	 * Creates the Entity corresponding to the sub_entities of this Complex,
+	 * Creates the Entities corresponding to the sub_entities of this Complex,
 	 * and returns them as a list (and updates the sub_entities member).
 	 * The complex has to create the sub_entities because they are not in the result
 	 * of the SQL request interrogating only the abstract_node and entity_particpant
@@ -117,6 +122,10 @@ public class ComplexNode extends Entity {
 		this.sub_entities = sub_entities;
 	}
 	
+	/**
+	 * Adds a subentity to the list
+	 * @param e the Entity to add
+	 */
 	public void addSub_entity(Entity e){
 		sub_entities.add(e);
 	}

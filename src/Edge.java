@@ -1,8 +1,15 @@
+/**
+ * This class is used to create Edges in the graph
+ * (they correspond to the elements of "relationpair" in the database)
+ * @author Claire
+ *
+ */
+
 public class Edge 
 {
-	protected int pathwaydbId;
-	protected String pathwayId;
-	protected String interactionId;
+	protected int pathwaydbId; //n° of the database (1, 2, 3 or 4)
+	protected String pathwayId; //id of the pathway the relation belongs to
+	protected String interactionId; //interactionId of the relation
 	protected String interactionType;
 	protected String controlType;
 	protected Node nodeA;

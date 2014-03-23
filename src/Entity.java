@@ -1,5 +1,13 @@
 import java.util.ArrayList;
 
+/**
+ * This class represent "real" nodes of the graph
+ * (since SuperNodes and Pseudonodes do not represent anything, they are just used
+ * to create interaction more easily)
+ * @extends Node
+ * @author Claire
+ *
+ */
 
 public class Entity extends Node 
 {
@@ -8,8 +16,8 @@ public class Entity extends Node
 	protected String entityId;
 	protected String feature;
 	protected String location;
-	protected ComplexNode complex;
-	protected ArrayList<SuperNode> supernodes = new ArrayList<SuperNode>();
+	protected ComplexNode complex; //ComplexNode the entity belongs to, if it is part of  complex
+	protected ArrayList<SuperNode> supernodes = new ArrayList<SuperNode>(); //list of superNodes the entity belongs to
 	
 	public Entity(){}
 	
