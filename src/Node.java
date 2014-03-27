@@ -96,7 +96,8 @@ public class Node implements java.io.Serializable{
 	}
 
 	public String getCytoscapeName(){
-		return cytoscapeName;
+		String result=cytoscapeName.replace(" ", "_");
+		return result;
 	}
 
 	public void setCytoscapeName(String inputCytoscapeName)

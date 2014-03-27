@@ -122,14 +122,14 @@ public class CytoscapeWriting {
 
 				if (!cytoscapeNames.containsKey(tempName))
 				{
-					node.cytoscapeName = tempName;
+					node.setCytoscapeName(tempName);
 					cytoscapeNames.put(tempName, 1);
 					countCas1++;
 				}
 
 				if (cytoscapeNames.containsKey(tempName))
 				{
-					node.cytoscapeName = tempName + Integer.toString(cytoscapeNames.get(tempName) + 1);
+					node.setCytoscapeName(tempName + Integer.toString(cytoscapeNames.get(tempName) + 1));
 					cytoscapeNames.put(tempName, cytoscapeNames.get(tempName) + 1);
 					countCas2++;
 				}
@@ -138,7 +138,7 @@ public class CytoscapeWriting {
 				{
 					if (node.attributeForCytoscape(i) != null)
 					{
-						writer.write("\n"+ node.cytoscapeName + " = "+ node.attributeForCytoscape(i));
+						writer.write("\n"+ node.getCytoscapeName() + " = "+ node.attributeForCytoscape(i));
 						writer.flush();
 					}
 					i++;
@@ -230,16 +230,16 @@ public class CytoscapeWriting {
 
 			for (Edge edge : AllEdges)
 			{
-				String tempId = edge.interactionId;
+				String tempId = edge.getInteractionId();
 				if (!cytoscapeNames.containsKey(tempId))
 				{
-					edge.cytoscapeName = tempId;
+					edge.setCytoscapeName(tempId);
 					cytoscapeNames.put(tempId, 1);
 				}
 
 				if (cytoscapeNames.containsKey(tempId))
 				{
-					edge.cytoscapeName = tempId + Integer.toString(cytoscapeNames.get(tempId) + 1);
+					edge.setCytoscapeName(tempId + Integer.toString(cytoscapeNames.get(tempId) + 1));
 					cytoscapeNames.put(tempId, cytoscapeNames.get(tempId) + 1);
 				}
 
@@ -277,9 +277,41 @@ public class CytoscapeWriting {
 			allEdges = graph.edgeSet();
 			for (Edge edge: allEdges)
 			{
-				if (edge.nodeA != null && edge.nodeB != null)
+				if (edge.getNodeA() != null && edge.getNodeB() != null)
 				{
-					linksBw.write("\n" +  edge.nodeA.cytoscapeName + " " +  edge.cytoscapeName + " " + edge.nodeB.cytoscapeName);
+					if(edge.getNodeA() instanceof SuperNode){
+						ArrayList<Node> subnodes = ((SuperNode)edge.getNodeA()).getSubNodes();
+						int i=0;
+						for(Node n : subnodes){
+							if(n.cytoscapeName==null){ //Bug with some nodes
+								System.out.println("pb (could noy find cytscapeName) for :");
+								System.out.println(((Entity)n).getEntityId());
+								System.out.println(edge.getInteractionId());
+							}
+							else{
+								linksBw.write("\n" + n.getCytoscapeName()+ " relation_"+edge.getNodeA().getCytoscapeName()+"_"+i+" "+edge.getNodeA().getCytoscapeName());
+							}
+							
+							i++;
+						}
+					}
+					if(edge.getNodeB() instanceof SuperNode){
+						ArrayList<Node> subnodes = ((SuperNode)edge.getNodeB()).getSubNodes();
+						int i=0;
+						for(Node n : subnodes){
+							if(n.cytoscapeName==null){ //Bug with some nodes
+								System.out.println("pb (could noy find cytscapeName) for :");
+								System.out.println("entityId : "+((Entity)n).getEntityId());
+								System.out.println("interactionId :"+edge.getInteractionId());
+							}
+							else{
+							linksBw.write("\n" + edge.getNodeB().getCytoscapeName() + " relation_"+edge.getNodeB().getCytoscapeName()+"_"+i+" "+n.getCytoscapeName());
+							}
+							i++;
+							
+						}
+					}
+					linksBw.write("\n" +  edge.getNodeA().getCytoscapeName() + " " +  edge.getCytoscapeName() + " " + edge.getNodeB().getCytoscapeName());
 					linksBw.flush();
 				}
 			}

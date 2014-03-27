@@ -116,6 +116,21 @@ public class Edge implements java.io.Serializable
 	
 	
 	/**
+	 * @return the cytoscapeName
+	 */
+	public String getCytoscapeName() {
+		String result=cytoscapeName.replace(" ", "_");
+		return result;
+	}
+
+	/**
+	 * @param cytoscapeName the cytoscapeName to set
+	 */
+	public void setCytoscapeName(String cytoscapeName) {
+		this.cytoscapeName = cytoscapeName;
+	}
+
+	/**
 	 * @return the controlType
 	 */
 	public String getControlType() {
